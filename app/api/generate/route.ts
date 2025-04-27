@@ -1,0 +1,116 @@
+import { NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Define content types and their requirements
+interface ContentRequest {
+  platform: 'instagram' | 'linkedin' | 'twitter';
+  topic: string;
+  keywords: string[];
+  tone?: string;
+}
+
+// Initialize Google AI
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+export async function POST(request: Request) {
+  try {
+    const body: ContentRequest = await request.json();
+    const { platform, topic, keywords, tone = 'professional' } = body;
+
+    // Platform-specific prompts
+    const prompts = {
+      instagram: `Create an engaging Instagram post about ${topic}. Include relevant hashtags. 
+                 Make it visually descriptive and emotionally appealing. 
+                 Optimize for these keywords: ${keywords.join(', ')}. 
+                 Tone should be ${tone}.`,
+      linkedin: `Write a professional LinkedIn post about ${topic}. 
+                Focus on business value and industry insights. 
+                Include these keywords for SEO: ${keywords.join(', ')}. 
+                Maintain a ${tone} tone.`,
+      twitter: `Create a concise Twitter post (max 280 chars) about ${topic}. 
+               Make it engaging and shareable. 
+               Incorporate these keywords naturally: ${keywords.join(', ')}. 
+               Use a ${tone} tone.`
+    };
+
+    // Generate content using Gemini
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: `You are a professional social media content creator. ${prompts[platform]}` }],
+        }
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: platform === 'twitter' ? 100 : 300,
+      },
+    });
+
+    const response = await result.response;
+    let processedContent = response.text();
+    
+    // Post-process the content based on platform requirements
+    if (platform === 'twitter' && processedContent.length > 280) {
+      processedContent = processedContent.substring(0, 277) + '...';
+    }
+
+    // Add SEO optimization
+    const seoOptimized = {
+      content: processedContent,
+      keywords: keywords,
+      platform: platform,
+      metadata: {
+        contentLength: processedContent.length,
+        keywordDensity: calculateKeywordDensity(processedContent, keywords),
+        readabilityScore: calculateReadabilityScore(processedContent)
+      }
+    };
+
+    return NextResponse.json({ 
+      success: true, 
+      data: seoOptimized 
+    });
+
+  } catch (error) {
+    console.error('Content generation error:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Failed to generate content' 
+    }, { status: 500 });
+  }
+}
+
+// Helper functions for SEO optimization
+function calculateKeywordDensity(content: string, keywords: string[]): number {
+  const wordCount = content.toLowerCase().split(/\s+/).length;
+  let keywordCount = 0;
+  
+  keywords.forEach(keyword => {
+    const regex = new RegExp(keyword.toLowerCase(), 'g');
+    const matches = content.toLowerCase().match(regex);
+    if (matches) {
+      keywordCount += matches.length;
+    }
+  });
+
+  return (keywordCount / wordCount) * 100;
+}
+
+function calculateReadabilityScore(content: string): number {
+  // Simple Flesch-Kincaid readability score implementation
+  const sentences = content.split(/[.!?]+/).length;
+  const words = content.toLowerCase().split(/\s+/).length;
+  const syllables = countSyllables(content);
+  
+  return 206.835 - 1.015 * (words / sentences) - 84.6 * (syllables / words);
+}
+
+function countSyllables(text: string): number {
+  // Basic syllable counting implementation
+  return text.toLowerCase()
+    .replace(/[^a-z]/g, '')
+    .replace(/[^aeiouy]*[aeiouy]+/g, 'a')
+    .length;
+}
