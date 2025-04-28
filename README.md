@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 align="center" id="title">ContentCraftAI</h1>
 
-## Getting Started
+<p align="center"><img src="https://media-hosting.imagekit.io/707a122e68444b25/Screenshot%202025-04-28%20at%209.52.54%E2%80%AFPM%20copy.png?Expires=1840465683&amp;Key-Pair-Id=K2ZIVPTIP2VGHC&amp;Signature=w9wnR6STLNTPdjNeczfAB9chdKgudpQjrz-LQqwGMZWqR9I16xzJewtWkSdhWDopluc6HB8B~UIrVHJp884NimnoPEmJ0d~wHqtOWQKWp5qVFoU~8-MqrCUswvt~ZdeqDKyqaEdBdjAAWa-7O3mN-UAEqMPz-7xkGIQrLErsKHQwKXswyCnZlRLF6bPnMrDPJc1Smkwsv9-8Jn0MgNFncpYN6Qfxnd9AbX1PKSUk45ZpuFXVbjOtOcCwWdzuPdxpGMQlbMTYxwRoeR7u3QDO1Xo-s1oPnTmAi~~XcmjT5uqhbVxJKMaiUfa57R4OgexN828-siKI2BseasxuwNYwVw__" alt="project-image"></p>
 
-First, run the development server:
+<p id="description">AI Content Writer is a powerful SaaS (Software-as-a-Service) platform designed to generate high-quality SEO-optimized social media content using Llama 3.1 models from Groq. It allows users to automatically generate posts for platforms like Twitter LinkedIn and Instagram based on: Topics Targeted Keywords Preferred Tone (professional friendly engaging etc.) Not just that — users can also directly post the generated content to Twitter using OAuth 2.0 authentication making the content creation and publishing process completely seamless!</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  
+  
+<h2>🧐 Features</h2>
+
+Here're some of the project's best features:
+
+*   AI-Powered Content Generation: Generates tailored engaging posts optimized for each platform
+*   latform Specific Customization: Twitter: Short punchy tweets (max 280 characters) LinkedIn: Professional value-driven posts Instagram: Emotional visually descriptive captions with hashtags
+*   SEO Optimized Output: Calculates keyword density and readability score automatically.
+*   Post to Twitter Directly: Users can authenticate with Twitter and instantly post the generated content.
+
+<h2>🛠️ Installation Steps:</h2>
+
+<p>1. Clone the project</p>
+
+```
+git clone "https://github.com/BRAVO23111/Ai-Content-Writer.git"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<p>2. Install all the Dependencies</p>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<p>3. Run the Project</p>
 
-## Learn More
+```
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+<h2>🍰 Contribution Guidelines:</h2>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Clone the Project Locally to start Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+  
+  
+<h2>💻 Built with</h2>
 
-## Deploy on Vercel
+Technologies used in the project:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*   Nextjs
+*   PostgreSQL
+*   Tailwind CSS
+*   NeonDB
+*   Aceternity UI
+*   Gemini API
