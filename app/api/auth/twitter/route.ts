@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAuthorizationUrl } from '@/lib/twitterOauth';
+import { getAuthorizationUrl } from '@/lib/twitteroauth';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 

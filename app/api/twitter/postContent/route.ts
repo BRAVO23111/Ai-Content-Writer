@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from 'next/headers';
-import { postTweet } from "@/lib/twitterOauth";
+import { postTweet } from "@/lib/twitteroauth";
 
 interface TwitterContentRequest {
   content: string;
