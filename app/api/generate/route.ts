@@ -7,6 +7,7 @@ interface ContentRequest {
   topic: string;
   keywords: string[];
   tone?: string;
+  autoPost?: boolean;
 }
 
 // Initialize Google AI
@@ -16,7 +17,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 export async function POST(request: Request) {
   try {
     const body: ContentRequest = await request.json();
-    const { platform, topic, keywords, tone = 'professional' } = body;
+    const { platform, topic, keywords, tone = 'professional', autoPost = false } = body;
 
     // Platform-specific prompts
     const prompts = {
@@ -67,6 +68,86 @@ export async function POST(request: Request) {
         readabilityScore: calculateReadabilityScore(processedContent)
       }
     };
+
+    // If it's Twitter content and autoPost is enabled, post directly to Twitter
+    if (platform === 'twitter' && autoPost) {
+      try {
+        // Use the absolute URL with your domain
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const twitterResponse = await fetch(`${baseUrl}/api/twitter/postContent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: processedContent,
+          }),
+        });
+        
+        // Handle response safely
+        let twitterData;
+        try {
+          const text = await twitterResponse.text();
+          console.log('Twitter response text:', text);
+          if(text){
+            try {
+              twitterData = JSON.parse(text);
+              console.log('Parsed Twitter response:', twitterData);
+            } catch (error) {
+              console.warn('Error parsing Twitter response:', error);
+              twitterData = { error: 'Invalid response from Twitter API' };
+            }
+          }
+        } catch (parseError) {
+          console.error('Error parsing Twitter response:', parseError);
+          twitterData = { error: 'Invalid response from Twitter API' };
+        }
+        
+        // Check if authentication is required
+        if (twitterData && twitterData.requiresAuth) {
+          return NextResponse.json({
+            success: true,
+            data: seoOptimized,
+            twitter: {
+              posted: false,
+              requiresAuth: true,
+              authUrl: twitterData.authUrl || '/api/auth/twitter'
+            }
+          });
+        }
+        
+        if (!twitterResponse.ok) {
+          console.error('Error posting to Twitter:', twitterData);
+          return NextResponse.json({
+            success: true,
+            data: seoOptimized,
+            twitter: {
+              posted: false,
+              error: twitterData.message || twitterData.error || `Failed to post to Twitter (${twitterResponse.status})`
+            }
+          });
+        }
+        
+        return NextResponse.json({
+          success: true,
+          data: seoOptimized,
+          twitter: {
+            posted: true,
+            tweet: twitterData
+          }
+        });
+      } catch (twitterError) {
+        console.error('Twitter posting error:', twitterError);
+        return NextResponse.json({
+          success: true,
+          data: seoOptimized,
+          twitter: {
+            posted: false,
+            error: 'Failed to post to Twitter'
+          }
+        });
+      }
+    }
 
     return NextResponse.json({ 
       success: true, 
