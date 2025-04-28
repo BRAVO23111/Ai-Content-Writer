@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getAuthorizationUrl } from '@/lib/twitteroauth';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
+import { getAuthorizationUrl } from '@/lib/twitteroauth';
 
 export async function GET() {
   try {
