@@ -1,5 +1,5 @@
 // Twitter OAuth 2.0 implementation
-import { NextResponse } from 'next/server';
+//@ts-ignore
 import crypto from 'crypto';
 import { TwitterApi } from 'twitter-api-v2';
 

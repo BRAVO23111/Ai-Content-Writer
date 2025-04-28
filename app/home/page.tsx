@@ -2,7 +2,6 @@
 'use client';
 
 import Footer from "@/components/Footer";
-import Link from "next/link";
 import { 
   Navbar, 
   NavBody, 
@@ -36,10 +35,10 @@ export default function HomePage() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="relative z-20 flex flex-row items-center justify-end gap-2">
-            <NavbarButton href="/auth/login" variant="outline">
+            <NavbarButton href="/auth/login" variant="primary">
               Login
             </NavbarButton>
-            <NavbarButton href="/auth/signup" variant="default">
+            <NavbarButton href="/auth/signup" variant="primary">
               Sign Up
             </NavbarButton>
           </div>
@@ -70,10 +69,10 @@ export default function HomePage() {
               </a>
             ))}
             <div className="mt-4 flex w-full flex-col gap-2 px-4">
-              <NavbarButton href="/auth/login" variant="outline" className="w-full">
+              <NavbarButton href="/auth/login" variant="primary" className="w-full">
                 Login
               </NavbarButton>
-              <NavbarButton href="/auth/signup" variant="default" className="w-full">
+              <NavbarButton href="/auth/signup" variant="primary" className="w-full">
                 Sign Up
               </NavbarButton>
             </div>

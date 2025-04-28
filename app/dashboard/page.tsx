@@ -1,10 +1,10 @@
 "use client"
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import TwitterConnectButton from '@/components/TwitterConnectButton';
 
-export default function Dashboard() {
-  const router = useRouter();
+// Create a separate component that uses useSearchParams
+function DashboardContent() {
   const searchParams = useSearchParams();
   const [twitterConnected, setTwitterConnected] = useState(false);
   const [autoPostToTwitter, setAutoPostToTwitter] = useState(false);
@@ -44,10 +44,8 @@ export default function Dashboard() {
     }
   }, [searchParams]);
   
-  // ... rest of your component
-  
   return (
-    <div>
+    <>
       {/* Add the Twitter Connect Button to your dashboard */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Content Dashboard</h1>
@@ -68,7 +66,42 @@ export default function Dashboard() {
         </label>
       </div>
       
-      {/* ... rest of your dashboard UI ... */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Generate New Content</h2>
+        {/* Add your content generation form here */}
+        <div className="p-6 border border-gray-800 rounded-lg bg-gray-900">
+          <p className="text-gray-400">Content generation form will go here</p>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Fallback component to display while the content is loading
+function DashboardFallback() {
+  return (
+    <div className="container mx-auto p-6">
+      <div className="animate-pulse">
+        <div className="flex justify-between items-center mb-6">
+          <div className="h-8 bg-gray-700 rounded w-48"></div>
+          <div className="h-10 bg-gray-700 rounded w-36"></div>
+        </div>
+        <div className="mb-4 h-6 bg-gray-700 rounded w-64"></div>
+        <div className="mt-8">
+          <div className="h-7 bg-gray-700 rounded w-48 mb-4"></div>
+          <div className="p-6 border border-gray-800 rounded-lg bg-gray-900 h-40"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <div className="container mx-auto p-6">
+      <Suspense fallback={<DashboardFallback />}>
+        <DashboardContent />
+      </Suspense>
     </div>
   );
 }

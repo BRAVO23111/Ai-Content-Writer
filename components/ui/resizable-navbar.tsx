@@ -46,6 +46,7 @@ interface MobileNavMenuProps {
   children: React.ReactNode;
   className?: string;
   isOpen: boolean;
+  //@ts-ignore
   onClose: () => void;
 }
 
