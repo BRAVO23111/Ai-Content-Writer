@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
+    
     // Get the access token from cookies
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('twitter_access_token')?.value;

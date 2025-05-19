@@ -2,8 +2,7 @@ import db from "@/lib/prismadb";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-
+console.log(process.env.DATABASE_URL)
 export async function POST(req: Request) {
     try {
         const {name , email , password} = await req.json();

@@ -1,14 +1,13 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "./src/generated/prisma" // This ensures the generated client is inside src/generated
+  output   = "./src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Ensure that you set DATABASE_URL in your .env file
+  url      = env("DATABASE_URL")
 }
 
-// User Model: Stores user information
 model User {
   id        String    @id @default(cuid())
   name      String
@@ -19,7 +18,6 @@ model User {
   contents  Content[]
 }
 
-// Content Model: Stores AI-generated content
 model Content {
   id        String   @id @default(cuid())
   title     String
