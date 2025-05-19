@@ -1,58 +1,97 @@
-"use client"
+"use client";
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TwitterConnectButton from '@/components/TwitterConnectButton';
+import GenerateContent from '../generate-form/page';
+import { cn } from "@/lib/utils";
+import axios from 'axios';
 
-// Create a separate component that uses useSearchParams
+function ContentCard({ item }: { item: any }) {
+  return (
+    <div className="max-w-xs w-full group/card">
+      <div
+        className={cn(
+          "cursor-pointer overflow-hidden relative card h-96 rounded-md shadow-xl max-w-sm mx-auto flex flex-col justify-between p-4",
+          "bg-gray-900 border border-gray-800"
+        )}>
+        <div className="absolute w-full h-full top-0 left-0 transition duration-300 group-hover/card:bg-black opacity-60"></div>
+        <div className="flex flex-row items-center space-x-4 z-10">
+          <div className="h-10 w-10 rounded-full border-2 bg-gray-800"></div>
+          <div className="flex flex-col">
+            <p className="text-sm text-gray-400">{new Date(item.createdAt).toLocaleString()}</p>
+          </div>
+        </div>
+        <div className="text content">
+          <h1 className="font-bold text-xl md:text-2xl text-gray-50 relative z-10">
+            {item.title}
+          </h1>
+          <p className="font-normal text-sm text-gray-50 relative z-10 my-4">
+            {item.body}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DashboardContent() {
   const searchParams = useSearchParams();
   const [twitterConnected, setTwitterConnected] = useState(false);
   const [autoPostToTwitter, setAutoPostToTwitter] = useState(false);
+  const [contentList, setContentList] = useState([]);
+  const [loadingContent, setLoadingContent] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchContent() {
+      setLoadingContent(true);
+      setError("");
+      try {
+        const res = await axios.get("/api/generate"); 
+        const data = res.data;
+        console.log(data);
+        
+        if (data.success) {
+          setContentList(data.data);
+        } else {
+          setError(data.error || "Failed to fetch content");
+        }
+      } catch (err: any) {
+        setError(err?.response?.data?.error || "Failed to fetch content");
+      } finally {
+        setLoadingContent(false);
+      }
+    }
+    fetchContent();
+  }, []);
   
-  // Handle Twitter connection status changes
   const handleTwitterStatusChange = (connected: boolean) => {
     setTwitterConnected(connected);
-    // If disconnected, disable auto-post
-    if (!connected) {
-      setAutoPostToTwitter(false);
-    }
+    if (!connected) setAutoPostToTwitter(false);
   };
-  
-  // Check for Twitter connection status in URL parameters
+
   useEffect(() => {
-    // Check for successful Twitter connection
     const twitterConnectedParam = searchParams.get('twitter_connected');
     if (twitterConnectedParam === 'true') {
-      // Show success message
       alert('Twitter connected successfully!');
       setTwitterConnected(true);
-      
-      // Optionally clear the URL parameter
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+      window.history.replaceState({}, '', window.location.pathname);
     }
-    
-    // Check for Twitter error
+
     const twitterError = searchParams.get('twitter_error');
     if (twitterError) {
-      // Show error message
       alert(`Failed to connect Twitter: ${twitterError}. Please try again.`);
-      
-      // Optionally clear the URL parameter
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, [searchParams]);
-  
+
   return (
     <>
-      {/* Add the Twitter Connect Button to your dashboard */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Content Dashboard</h1>
         <TwitterConnectButton onStatusChange={handleTwitterStatusChange} />
       </div>
-      
-      {/* When generating content, show Twitter posting option only if connected */}
+
       <div className="mb-4">
         <label className="flex items-center space-x-2">
           <input
@@ -65,19 +104,34 @@ function DashboardContent() {
           <span>Auto-post to Twitter {!twitterConnected && "(Connect Twitter first)"}</span>
         </label>
       </div>
-      
+
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">Generate New Content</h2>
-        {/* Add your content generation form here */}
         <div className="p-6 border border-gray-800 rounded-lg bg-gray-900">
-          <p className="text-gray-400">Content generation form will go here</p>
+          <GenerateContent />
         </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Your Generated Content</h2>
+        {loadingContent ? (
+          <div>Loading content...</div>
+        ) : error ? (
+          <div className="text-red-500">{error}</div>
+        ) : contentList.length === 0 ? (
+          <div>No content found.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {contentList.map((item: any) => (
+              <ContentCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
 }
 
-// Fallback component to display while the content is loading
 function DashboardFallback() {
   return (
     <div className="container mx-auto p-6">

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { cookies } from 'next/headers';
+import db from "@/lib/prismadb";
 
 // Define content types and their requirements
 interface ContentRequest {
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const response = await result.response;
+    const response =  result.response;
     let processedContent = response.text();
     
     // Post-process the content based on platform requirements
@@ -149,6 +151,24 @@ export async function POST(request: Request) {
       }
     }
 
+    // Get user from session token
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session_token');
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized - No session token' }, { status: 401 });
+    }
+    const user = await db.user.findUnique({ where: { id: sessionToken.value } });
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized - User not found' }, { status: 401 });
+    }
+    // Save content to DB
+    const savedContent = await db.content.create({
+      data: {
+        title: topic,
+        body: processedContent,
+        userId: user.id,
+      },
+    });
     return NextResponse.json({ 
       success: true, 
       data: seoOptimized 
@@ -194,4 +214,35 @@ function countSyllables(text: string): number {
     .replace(/[^a-z]/g, '')
     .replace(/[^aeiouy]*[aeiouy]+/g, 'a')
     .length;
+}
+
+export async function GET(request:Request) {
+    try {
+          const cookieStore = await cookies();
+          const sessionToken = cookieStore.get('session_token');
+
+          if (!sessionToken) {
+            return NextResponse.json(
+              { error: 'Unauthorized - No session token' },
+              { status: 401 }
+            );
+          }
+          // Fetch all content from the database
+          const allContent = await db.content.findMany({
+            orderBy: { createdAt: 'desc' },
+          });
+          return NextResponse.json({
+            allContent,
+            success: true,
+            data: allContent
+          });
+
+    } catch (error) {
+      console.error('error fetching the content' ,error);
+      return NextResponse.json({
+        error : 'Failed to fetch content'
+      } , {
+        status : 500
+      })
+    }
 }

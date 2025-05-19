@@ -1,7 +1,6 @@
-//@ts-ignore
 import { NextResponse } from "next/server";
-import { cookies } from 'next/headers';
 import { postTweet } from "@/lib/twitteroauth";
+import { cookies } from 'next/headers';
 
 interface TwitterContentRequest {
   content: string;

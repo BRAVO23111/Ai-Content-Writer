@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getAccessToken } from '@/lib/twitteroauth';
 
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);

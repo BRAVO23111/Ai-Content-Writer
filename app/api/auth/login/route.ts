@@ -1,5 +1,6 @@
 import db from "@/lib/prismadb";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 
@@ -28,6 +29,15 @@ export async function POST(req: Request) {
             message: "Incorrect password",
         }, { status: 400 });
        }
+
+       const cookieStore = await cookies();
+       cookieStore.set('session_token' , user.id , {
+        httpOnly:true,
+        secure : process.env.NODE_ENV === 'production',
+        sameSite : 'lax',
+        maxAge : 60 * 60 * 24 * 7,
+        path : '/,'
+       })
        return NextResponse.json({
         message: "User logged in",
         id : user.id,
