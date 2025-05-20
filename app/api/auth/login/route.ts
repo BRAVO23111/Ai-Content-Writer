@@ -1,4 +1,4 @@
-import db from "@/lib/prismadb";
+import db from "@/app/lib/prismadb";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";

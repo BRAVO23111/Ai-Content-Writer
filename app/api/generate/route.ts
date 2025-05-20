@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { cookies } from 'next/headers';
-import db from "@/lib/prismadb";
+import db from "@/app/lib/prismadb";
 
 // Define content types and their requirements
 interface ContentRequest {

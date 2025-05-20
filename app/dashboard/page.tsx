@@ -3,7 +3,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TwitterConnectButton from '@/components/TwitterConnectButton';
 import GenerateContent from '../generate-form/page';
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import axios from 'axios';
 import { Navbar, NavBody, NavItems, NavbarLogo, MobileNav, MobileNavHeader, MobileNavToggle, MobileNavMenu } from "@/components/ui/resizable-navbar";
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/prismadb';
+import db from '@/app/lib/prismadb';
 
 export async function PUT(request: Request) {
   try {
