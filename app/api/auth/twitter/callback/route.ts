@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getAccessToken } from '../../../../../lib/twitteroauth';
+import { getAccessToken } from '@/lib/twitteroauth';
 
 
 export async function GET(request: Request) {
