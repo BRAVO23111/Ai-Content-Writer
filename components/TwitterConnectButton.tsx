@@ -11,13 +11,11 @@ export default function TwitterConnectButton({ onStatusChange }: TwitterConnectB
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check Twitter connection status on load
   useEffect(() => {
     const checkTwitterStatus = async () => {
       try {
         const response = await fetch('/api/auth/twitter/status');
         const data = await response.json();
-        
         setIsConnected(data.authenticated);
         if (onStatusChange) {
           onStatusChange(data.authenticated);
@@ -28,12 +26,10 @@ export default function TwitterConnectButton({ onStatusChange }: TwitterConnectB
         setIsLoading(false);
       }
     };
-
     checkTwitterStatus();
   }, [onStatusChange]);
 
   const handleConnect = () => {
-    // Redirect to Twitter auth endpoint
     window.location.href = '/api/auth/twitter';
   };
 
@@ -50,26 +46,16 @@ export default function TwitterConnectButton({ onStatusChange }: TwitterConnectB
   };
 
   if (isLoading) {
-    return <Button disabled variant="outline" size="sm">
-      Checking Twitter...
-    </Button>;
+    return <Button disabled variant="outline" size="sm">Checking Twitter...</Button>;
   }
 
-  if (isConnected) {
-    return (
-      <div className="flex space-x-2">
-        <Button variant="outline" size="sm" className="bg-green-50 text-green-700">
-          Twitter Connected
-        </Button>
-        <Button onClick={handleDisconnect} variant="outline" size="sm" className="text-red-600">
-          Disconnect
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <Button onClick={handleConnect} variant="outline" size="sm">
+  return isConnected ? (
+    <Button onClick={handleDisconnect} variant="outline" size="sm" className="bg-green-600/90 text-white hover:bg-green-700 transition-all flex items-center gap-2">
+      <span className="inline-block w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse" />
+      Connected
+    </Button>
+  ) : (
+    <Button onClick={handleConnect} variant="outline" size="sm" className="bg-blue-600/90 text-white hover:bg-blue-700 transition-all">
       Connect Twitter
     </Button>
   );
